@@ -4,7 +4,7 @@ spring:
 
 # HTTP Server
 server:
-  port: 3333   # HTTP (Tomcat) port
+  port: 2222   # HTTP (Tomcat) port
 
 management:
   info:
