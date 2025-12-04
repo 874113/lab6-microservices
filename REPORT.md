@@ -2,12 +2,11 @@
 
 ## 1. Configuration Setup
 
-**Configuration Repository**: [Link to your forked repository]
+**Configuration Repository**: [[Link to your forked repository](https://github.com/874113/lab6-microservices)]
 
-Describe the changes you made to the configuration:
+En el archivo `accounts-service.yml`, modifiqué principalmente el puerto en el que se ejecuta el servicio de cuentas, estableciéndolo en el puerto 2222 para crear un nuevo servicio de cuentas adicional, asegurándome de que no entrara en conflicto con la instancia original que corre en el puerto 3333.
 
-- What did you modify in `accounts-service.yml`?
-- Why is externalized configuration useful in microservices?
+La configuración externalizada es esencial en microservicios porque permite cambiar parámetros (puertos, credenciales, etc) sin recompilar el código, facilita tener diferentes configuraciones, mejora la seguridad al separar secretos del código fuente, y permite que múltiples instancias compartan una configuración centralizada. Esto proporciona flexibilidad, mantenibilidad y escalabilidad sin intervención manual en cada despliegue.
 
 ---
 
@@ -119,9 +118,7 @@ Tras parar el servicio de cuentas del puerto 3333 y realizar varias peticiones, 
 
 Por su parte, el servicio web logra recuperarse a los 3-4 minutos, ya que el LoadBalancer detecta que la instancia en el puerto 3333 no responde y la elimina de su caché local. A partir de ese momento, todas las solicitudes se dirigen únicamente a la instancia activa en el puerto 2222, evitando más errores.
 
-Eureka utiliza un mecanismo de heartbeats para monitorear la salud de las instancias registradas. Cada instancia envía un heartbeat cada pocos segundos, de forma que si una instancia no envía un heartbeat dentro de ese período de tiempo, Eureka la marca como "DOWN" y la elimina del registro. De esta forma la instancia se elimina del dashboard a los 90-120 segundos.
-
-**Nota:** En el deshboard se debería poder observar como la instancia del puerto 3333 se marca como DOWN y posteriormente se elimina del dashboard, esto no ha sido posible ya que directamente la instancia se eliminaba del dashboard.
+Eureka utiliza un mecanismo de heartbeats para monitorear la salud de las instancias registradas. Cada instancia envía un heartbeat cada pocos segundos, de forma que si una instancia no envía un heartbeat dentro de ese período de tiempo, Eureka la marca como "DOWN" y la elimina del registro.
 
 ---
 
@@ -129,11 +126,9 @@ Eureka utiliza un mecanismo de heartbeats para monitorear la salud de las instan
 
 ![Recovery State](docs/screenshots/recovery.png)
 
-**Nota:** Al tener el dashboard recuperado en la anterior tarea (en vez de la instancia con DOWN), esta captura representa la realización de 2 solicitudes seguidas al servicio web, demostrando que ambas son redirigidas a la instancia que funciona correctamente (puerto 2222).
-
 El servicio web se recupera porque el LoadBalancer del cliente detecta que la instancia caída (puerto 3333) ya no está disponible y la elimina de su caché local. Esto permite que todas las solicitudes futuras se dirijan únicamente a la instancia activa (puerto 2222), evitando errores de conexión.
 
-La recuperación tomó aproximadamente entre 3 a 4 minutos en total. Durante este tiempo, el LoadBalancer intentó acceder a ambas instancias, pero al no recibir respuesta de la instancia caída, la eliminó de su caché.
+La recuperación tomó aproximadamente entre 3 a 4 minutos. Durante este tiempo, el LoadBalancer intentó acceder a ambas instancias, pero al no recibir respuesta de la instancia caída, la eliminó de su caché.
 
 La cache del lado del cliente juega un papel crucial en el proceso de recuperación, ya que permite al LoadBalancer mantener una lista actualizada de las instancias disponibles. Al eliminar la instancia no funcional de la caché, el LoadBalancer puede redirigir las solicitudes a las instancias activas, asegurando la continuidad del servicio sin interrupciones significativas.
 
